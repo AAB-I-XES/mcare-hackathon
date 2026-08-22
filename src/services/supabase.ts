@@ -22,6 +22,7 @@ export const getSupabase = (): SupabaseClient | null => {
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
+        flowType: 'implicit',
       },
     });
   }
@@ -105,7 +106,7 @@ export const supabaseSignInWithEmail = async (
   if (!client) {
     return {
       success: false,
-      error: 'Supabase credentials not configured in .env. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.',
+      error: 'Supabase credentials not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.',
     };
   }
 
@@ -157,7 +158,7 @@ export const supabaseSignUpWithEmail = async (
   if (!client) {
     return {
       success: false,
-      error: 'Supabase credentials not configured in .env. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.',
+      error: 'Supabase credentials not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.',
     };
   }
 
@@ -197,20 +198,37 @@ export const supabaseSignUpWithEmail = async (
   }
 };
 
-export const supabaseSignInWithOAuth = async (provider: 'google' | 'github') => {
+/**
+ * Direct Google OAuth Authentication via Supabase
+ */
+export const supabaseSignInWithGoogle = async (role: UserRole = 'worker') => {
   const client = getSupabase();
   if (!client) {
-    throw new Error('Supabase not configured.');
+    throw new Error('Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+  }
+
+  // Save selected role into localStorage so when OAuth returns, role is maintained
+  try {
+    localStorage.setItem('migrantcare_oauth_role', role);
+  } catch (e) {
+    // Ignore storage issues
   }
 
   const { data, error } = await client.auth.signInWithOAuth({
-    provider,
+    provider: 'google',
     options: {
       redirectTo: window.location.origin,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
     },
   });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
+
   return data;
 };
 

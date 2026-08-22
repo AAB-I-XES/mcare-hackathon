@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Smartphone, Mail, Database } from 'lucide-react';
+import { Sparkles, Smartphone, Mail, Database, AlertCircle } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { AppUser, UserRole } from '../../types';
 import {
@@ -8,12 +8,12 @@ import {
   getDemoProvider,
   getDemoEmployer,
   isSupabaseConfigured,
+  supabaseSignInWithGoogle,
 } from '../../services';
 import { Header, Footer, Badge } from '../common';
 import { RoleSelector } from './RoleSelector';
 import { PhoneLoginForm } from './PhoneLoginForm';
 import { EmailAuthForm } from './EmailAuthForm';
-import { GoogleAuthModal } from './GoogleAuthModal';
 
 interface AuthViewProps {
   onLogin: (user: AppUser, token: string) => void;
@@ -36,7 +36,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [clinicRegNo, setClinicRegNo] = useState('MCR-2018-9482');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showGoogleModal, setShowGoogleModal] = useState(false);
 
   const supabaseReady = isSupabaseConfigured();
 
@@ -93,6 +92,23 @@ export const AuthView: React.FC<AuthViewProps> = ({
         handleDemoEmployerLogin();
       }
     }, 350);
+  };
+
+  const handleGoogleSignIn = async () => {
+    setErrorMessage('');
+    setIsLoading(true);
+
+    try {
+      if (!isSupabaseConfigured()) {
+        throw new Error(
+          'Supabase environment variables (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY) are required to initiate Google OAuth with Supabase.'
+        );
+      }
+      await supabaseSignInWithGoogle(selectedRole || 'worker');
+    } catch (err: any) {
+      setIsLoading(false);
+      setErrorMessage(err?.message || 'Google Auth through Supabase encountered an error.');
+    }
   };
 
   const handleFallbackEmailLogin = (role: UserRole, email: string) => {
@@ -182,6 +198,13 @@ export const AuthView: React.FC<AuthViewProps> = ({
                 </p>
               </div>
 
+              {errorMessage && (
+                <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
               {/* Method Switcher Tabs (Phone PIN vs Supabase Email) */}
               <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-lg text-xs font-semibold text-slate-600">
                 <button
@@ -217,12 +240,13 @@ export const AuthView: React.FC<AuthViewProps> = ({
                 </button>
               </div>
 
-              {/* Google Fast Sign-in Button */}
+              {/* Google Sign-in Button powered directly by Supabase Auth */}
               <button
                 type="button"
-                onClick={() => setShowGoogleModal(true)}
+                onClick={handleGoogleSignIn}
                 disabled={isLoading}
                 className="btn-minimal-google cursor-pointer"
+                title="Authenticate with Google via Supabase OAuth"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -242,7 +266,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
-                <span>Continue with Google</span>
+                <span>{isLoading ? 'Connecting to Supabase...' : 'Continue with Google'}</span>
               </button>
 
               <div className="relative flex py-1 items-center">
@@ -291,18 +315,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
           </div>
         )}
       </main>
-
-      {/* Google Sign-in Modal */}
-      {showGoogleModal && selectedRole && (
-        <GoogleAuthModal
-          role={selectedRole}
-          onSuccess={(user, token) => {
-            setShowGoogleModal(false);
-            onLogin(user, token);
-          }}
-          onClose={() => setShowGoogleModal(false)}
-        />
-      )}
 
       <Footer />
     </div>

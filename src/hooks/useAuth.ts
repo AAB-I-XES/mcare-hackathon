@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { AppUser } from '../types';
+import { AppUser, UserRole } from '../types';
 import {
   getStoredSession,
   saveSession,
@@ -40,14 +40,29 @@ export const useAuth = () => {
       refreshUser();
     });
 
-    // Supabase Auth State listener
+    // Supabase Auth State listener & initial session check
     const supabase = getSupabase();
     let authListenerSubscription: { unsubscribe: () => void } | null = null;
 
     if (supabase) {
+      const defaultRole = (localStorage.getItem('migrantcare_oauth_role') as UserRole) || 'worker';
+
+      // Check current session immediately (useful on OAuth redirect callback)
+      supabase.auth.getSession().then(({ data: { session }, error }) => {
+        if (!error && session?.user) {
+          const appUser = mapSupabaseUserToAppUser(session.user, defaultRole);
+          saveSession(appUser, session.access_token);
+          setCurrentUser(appUser);
+          setAuthToken(session.access_token);
+        }
+      });
+
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          const appUser = mapSupabaseUserToAppUser(session.user);
+        if (
+          (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') &&
+          session?.user
+        ) {
+          const appUser = mapSupabaseUserToAppUser(session.user, defaultRole);
           saveSession(appUser, session.access_token);
           setCurrentUser(appUser);
           setAuthToken(session.access_token);
