@@ -4,6 +4,7 @@ import { useAuth } from './hooks';
 import {
   AuthView,
   RegisterView,
+  UserInfoSetupView,
   WorkerDashboard,
   DoctorDashboard,
   EmployerDashboard,
@@ -11,7 +12,7 @@ import {
 } from './components';
 
 function AppContent() {
-  const { currentUser, login, logout } = useAuth();
+  const { currentUser, pendingSetupUser, login, logout, startSetup, cancelSetup } = useAuth();
   const [viewState, setViewState] = useState<'auth' | 'register'>('auth');
   const [registrationPhone, setRegistrationPhone] = useState('');
 
@@ -21,6 +22,23 @@ function AppContent() {
   };
 
   const renderMainView = () => {
+    // 1. If user is authenticated via Google/OAuth but has not finished user info setup:
+    if (pendingSetupUser) {
+      return (
+        <UserInfoSetupView
+          pendingUser={pendingSetupUser}
+          onComplete={(completedUser, token) => {
+            login(completedUser, token);
+          }}
+          onCancel={() => {
+            cancelSetup();
+            setViewState('auth');
+          }}
+        />
+      );
+    }
+
+    // 2. If no active session:
     if (!currentUser) {
       if (viewState === 'register') {
         return (
@@ -35,12 +53,14 @@ function AppContent() {
         <AuthView
           onLogin={(user, token) => login(user, token)}
           onShowRegister={() => setViewState('register')}
+          onStartGoogleSetup={startSetup}
           registrationPhone={registrationPhone}
           setRegistrationPhone={setRegistrationPhone}
         />
       );
     }
 
+    // 3. Authenticated Role Dashboards:
     if (currentUser.role === 'worker') {
       return <WorkerDashboard user={currentUser} onLogout={logout} />;
     }

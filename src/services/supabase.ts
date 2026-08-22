@@ -29,6 +29,45 @@ export const getSupabase = (): SupabaseClient | null => {
   return supabaseClient;
 };
 
+export const isUserProfileCompleted = (
+  supabaseUser: SupabaseAuthUser
+): boolean => {
+  const meta = supabaseUser.user_metadata || {};
+  if (meta.profile_completed === true) {
+    return true;
+  }
+  const role = meta.role as UserRole | undefined;
+  if (role === 'provider' && meta.facility && meta.reg_no) {
+    return true;
+  }
+  if (role === 'employer' && meta.company) {
+    return true;
+  }
+  if (role === 'worker' && meta.dob && meta.blood_group && meta.phone) {
+    return true;
+  }
+  return false;
+};
+
+export const updateSupabaseUserProfile = async (
+  profileData: Record<string, any>
+): Promise<boolean> => {
+  const client = getSupabase();
+  if (!client) return false;
+  try {
+    const { error } = await client.auth.updateUser({
+      data: {
+        ...profileData,
+        profile_completed: true,
+      },
+    });
+    return !error;
+  } catch (e) {
+    console.warn('Failed to update Supabase user profile metadata:', e);
+    return false;
+  }
+};
+
 export const mapSupabaseUserToAppUser = (
   supabaseUser: SupabaseAuthUser,
   defaultRole: UserRole = 'worker'
@@ -42,8 +81,8 @@ export const mapSupabaseUserToAppUser = (
       id: supabaseUser.id,
       name,
       role: 'provider',
-      reg_no: meta.reg_no || 'MCR-2024-SUPA',
-      facility: meta.facility || meta.facility_name || 'Regional Health Center',
+      reg_no: meta.reg_no || 'MCR-PENDING',
+      facility: meta.facility || meta.facility_name || 'General Health Clinic',
       email: supabaseUser.email,
       created_at: supabaseUser.created_at || new Date().toISOString(),
     };
@@ -55,7 +94,7 @@ export const mapSupabaseUserToAppUser = (
       id: supabaseUser.id,
       name,
       role: 'employer',
-      company: meta.company || meta.company_name || 'General Construction Corp',
+      company: meta.company || meta.company_name || 'Enterprise Employer',
       email: supabaseUser.email,
       created_at: supabaseUser.created_at || new Date().toISOString(),
     };
@@ -70,20 +109,21 @@ export const mapSupabaseUserToAppUser = (
     role: 'worker',
     dob: meta.dob || '1995-01-01',
     gender: (meta.gender as 'Male' | 'Female' | 'Other') || 'Male',
-    phone: meta.phone || supabaseUser.phone || '+65 8000 0000',
+    phone: meta.phone || supabaseUser.phone || '',
     blood_group: meta.blood_group || 'O+',
-    allergies: meta.allergies || 'No known allergies',
+    allergies: meta.allergies || '',
     chronic_conditions: Array.isArray(meta.chronic_conditions) ? meta.chronic_conditions : [],
     preferred_language: (meta.preferred_language as 'en' | 'es') || 'en',
     photo_url:
       meta.photo_url ||
       meta.avatar_url ||
+      meta.picture ||
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    emergency_contact: typeof meta.emergency_contact === 'string' ? meta.emergency_contact : 'Primary Kin (+65 9111 2222)',
+    emergency_contact: typeof meta.emergency_contact === 'string' ? meta.emergency_contact : '',
     status: (meta.status as 'Fit for Work' | 'Restricted' | 'Under Observation') || 'Fit for Work',
     vaccinated: meta.vaccinated !== undefined ? Boolean(meta.vaccinated) : true,
     vaccine_count: typeof meta.vaccine_count === 'number' ? meta.vaccine_count : 3,
-    recommendations: meta.recommendations || 'Fit for standard workplace and job site assignments.',
+    recommendations: meta.recommendations || 'Fit for standard workplace assignments.',
     email: supabaseUser.email,
     created_at: supabaseUser.created_at || new Date().toISOString(),
   };
