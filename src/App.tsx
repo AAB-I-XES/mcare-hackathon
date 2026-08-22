@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { LanguageProvider } from './i18n';
 import { useAuth } from './hooks';
-import { AuthView, RegisterView, WorkerDashboard, DoctorDashboard, EmployerDashboard } from './components';
+import {
+  AuthView,
+  RegisterView,
+  WorkerDashboard,
+  DoctorDashboard,
+  EmployerDashboard,
+  NemotronChatDrawer,
+} from './components';
 
 function AppContent() {
   const { currentUser, login, logout } = useAuth();
@@ -13,35 +20,44 @@ function AppContent() {
     setViewState('auth');
   };
 
-  if (!currentUser) {
-    if (viewState === 'register') {
+  const renderMainView = () => {
+    if (!currentUser) {
+      if (viewState === 'register') {
+        return (
+          <RegisterView
+            phone={registrationPhone}
+            onRegisterSuccess={handleRegisterSuccess}
+            onCancel={() => setViewState('auth')}
+          />
+        );
+      }
       return (
-        <RegisterView
-          phone={registrationPhone}
-          onRegisterSuccess={handleRegisterSuccess}
-          onCancel={() => setViewState('auth')}
+        <AuthView
+          onLogin={(user, token) => login(user, token)}
+          onShowRegister={() => setViewState('register')}
+          registrationPhone={registrationPhone}
+          setRegistrationPhone={setRegistrationPhone}
         />
       );
     }
-    return (
-      <AuthView
-        onLogin={(user, token) => login(user, token)}
-        onShowRegister={() => setViewState('register')}
-        registrationPhone={registrationPhone}
-        setRegistrationPhone={setRegistrationPhone}
-      />
-    );
-  }
 
-  if (currentUser.role === 'worker') {
-    return <WorkerDashboard user={currentUser} onLogout={logout} />;
-  }
+    if (currentUser.role === 'worker') {
+      return <WorkerDashboard user={currentUser} onLogout={logout} />;
+    }
 
-  if (currentUser.role === 'provider') {
-    return <DoctorDashboard user={currentUser} onLogout={logout} />;
-  }
+    if (currentUser.role === 'provider') {
+      return <DoctorDashboard user={currentUser} onLogout={logout} />;
+    }
 
-  return <EmployerDashboard user={currentUser} onLogout={logout} />;
+    return <EmployerDashboard user={currentUser} onLogout={logout} />;
+  };
+
+  return (
+    <div className="relative min-h-screen bg-slate-50">
+      {renderMainView()}
+      <NemotronChatDrawer user={currentUser} />
+    </div>
+  );
 }
 
 export default function App() {
