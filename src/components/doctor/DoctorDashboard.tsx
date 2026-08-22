@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Stethoscope, Clock, ShieldCheck, UserCheck } from 'lucide-react';
 import { ProviderUser, WorkerUser, MedicalRecord, MedicalRecordType } from '../../types';
 import { useI18n } from '../../i18n';
 import {
@@ -151,12 +151,41 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ user, onLogout
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between text-slate-900 selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-between text-slate-900 selection:bg-emerald-500 selection:text-white">
       <Header user={user} onLogout={onLogout} />
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-6 sm:py-8 space-y-6">
+        {/* Top Doctor Medical Station Header Banner */}
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-900 to-teal-900 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-400/20 text-emerald-200 border border-emerald-400/30">
+                Clinical EMR Station
+              </span>
+              <span className="text-xs text-emerald-200 font-semibold flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                Consent-Governed Access
+              </span>
+            </div>
+            <h1 className="text-2xl font-extrabold tracking-tight text-white">
+              {user.facility || 'Central Mobile Clinic'} · Doctor Terminal
+            </h1>
+            <p className="text-xs text-emerald-100/80 max-w-xl">
+              Scan patient QR or enter Health ID to initiate a 5-minute cryptographic patient consent window. Review emergency vitals, log diagnoses, and issue certified digital prescriptions.
+            </p>
+          </div>
+
+          <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 border-emerald-700/50 pt-3 sm:pt-0">
+            <span className="text-[11px] text-emerald-200 uppercase font-semibold">Attending Physician</span>
+            <span className="text-sm font-bold text-white">{user.name}</span>
+            <span className="text-[11px] text-emerald-300 font-mono-code font-semibold">
+              Reg: {user.reg_no}
+            </span>
+          </div>
+        </div>
+
         {errorMessage && (
-          <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+          <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>

@@ -148,11 +148,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
         {!selectedRole ? (
           <RoleSelector
             onSelectRole={(role) => {
-              if (role === 'employer') {
-                handleDemoEmployerLogin();
-              } else {
-                setSelectedRole(role);
-              }
+              setSelectedRole(role);
             }}
             onDemoWorker={handleDemoWorkerLogin}
             onDemoDoctor={handleDemoProviderLogin}
