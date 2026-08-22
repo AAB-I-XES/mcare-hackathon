@@ -6,8 +6,8 @@
   --border-subtle: #e2e8f0;
   --border-strong: #cbd5e1;
   --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   --accent-primary: #0284c7;
   --accent-hover: #0369a1;
 }
@@ -20,81 +20,96 @@
 html,
 body {
   color: #0f172a;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.012em;
   background-color: #f8fafc;
   min-height: 100%;
   font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .font-mono-code {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+/* Professional Enterprise Surface Card */
 .minimal-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.02);
 }
 
 .minimal-card:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
 }
 
 .minimal-panel {
   background: #ffffff;
   border: 1px solid #e2e8f0;
+  border-radius: 10px;
 }
 
+/* Form Controls with Crisp Focus States */
 .minimal-input {
   color: #0f172a;
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   font-size: 0.875rem;
-  transition: all 0.15s ease;
+  font-weight: 500;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .minimal-input:focus {
   border-color: #0284c7;
+  background-color: #ffffff;
   outline: none;
   box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
 }
 
 .minimal-input::placeholder {
   color: #94a3b8;
+  font-weight: 400;
 }
 
+/* Primary Enterprise Action Button */
 .btn-minimal-primary {
   color: #ffffff;
   background: #0f172a;
-  border: 1px solid transparent;
+  border: 1px solid #0f172a;
   border-radius: 8px;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.125rem;
+  padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
   transition: all 0.15s ease;
   display: inline-flex;
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.08);
 }
 
 .btn-minimal-primary:hover:not(:disabled) {
   background: #1e293b;
+  border-color: #1e293b;
+  box-shadow: 0 2px 4px 0 rgba(15, 23, 42, 0.12);
 }
 
 .btn-minimal-primary:active:not(:disabled) {
-  transform: scale(0.99);
+  transform: translateY(1px);
+  box-shadow: none;
 }
 
 .btn-minimal-primary:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
+/* Secondary Enterprise Button */
 .btn-minimal-secondary {
   color: #334155;
   background: #ffffff;
@@ -103,19 +118,27 @@ body {
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.125rem;
+  padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
   transition: all 0.15s ease;
   display: inline-flex;
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.03);
 }
 
 .btn-minimal-secondary:hover:not(:disabled) {
   color: #0f172a;
-  background: #f1f5f9;
+  background: #f8fafc;
   border-color: #94a3b8;
 }
 
+.btn-minimal-secondary:active:not(:disabled) {
+  transform: translateY(1px);
+  background: #f1f5f9;
+}
+
+/* Google Sign-in Button */
 .btn-minimal-google {
   color: #1e293b;
   background: #ffffff;
@@ -125,18 +148,27 @@ body {
   align-items: center;
   gap: 0.625rem;
   width: 100%;
-  padding: 0.625rem 1.125rem;
+  padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
   transition: all 0.15s ease;
   display: inline-flex;
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
 }
 
 .btn-minimal-google:hover:not(:disabled) {
   background: #f8fafc;
   border-color: #94a3b8;
+  box-shadow: 0 2px 5px 0 rgba(15, 23, 42, 0.06);
 }
 
+.btn-minimal-google:active:not(:disabled) {
+  transform: translateY(1px);
+  background: #f1f5f9;
+}
+
+/* Crisp Institutional Badges */
 .badge-clean {
   border: 1px solid transparent;
   border-radius: 6px;
@@ -145,6 +177,7 @@ body {
   padding: 0.2rem 0.55rem;
   font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: -0.005em;
   display: inline-flex;
 }
 
@@ -167,7 +200,7 @@ body {
 }
 
 .badge-clean-purple {
-  color: #7e22ce;
+  color: #6b21a8;
   background: #faf5ff;
   border-color: #e9d5ff;
 }
@@ -179,11 +212,12 @@ body {
 }
 
 .badge-clean-slate {
-  color: #475569;
+  color: #334155;
   background: #f1f5f9;
   border-color: #cbd5e1;
 }
 
+/* Micro-scrollbars */
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
@@ -191,4 +225,5 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 

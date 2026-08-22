@@ -8,7 +8,6 @@ import {
   WorkerDashboard,
   DoctorDashboard,
   EmployerDashboard,
-  NemotronChatDrawer,
 } from './components';
 
 function AppContent() {
@@ -75,7 +74,6 @@ function AppContent() {
   return (
     <div className="relative min-h-screen bg-slate-50">
       {renderMainView()}
-      <NemotronChatDrawer user={currentUser} />
     </div>
   );
 }

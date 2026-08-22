@@ -146,7 +146,7 @@ export const supabaseSignInWithEmail = async (
   if (!client) {
     return {
       success: false,
-      error: 'Supabase credentials not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.',
+      error: 'Authentication service not configured. Please use Demo access or Google Sign-In.',
     };
   }
 
@@ -161,7 +161,7 @@ export const supabaseSignInWithEmail = async (
     }
 
     if (!data.user) {
-      return { success: false, error: 'User data not returned from Supabase.' };
+      return { success: false, error: 'User account details could not be retrieved.' };
     }
 
     const appUser = mapSupabaseUserToAppUser(data.user, preferredRole);
@@ -175,7 +175,7 @@ export const supabaseSignInWithEmail = async (
   } catch (err: any) {
     return {
       success: false,
-      error: err?.message || 'An unexpected error occurred connecting to Supabase.',
+      error: err?.message || 'An unexpected error occurred during authentication.',
     };
   }
 };
@@ -198,7 +198,7 @@ export const supabaseSignUpWithEmail = async (
   if (!client) {
     return {
       success: false,
-      error: 'Supabase credentials not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.',
+      error: 'Authentication service not configured. Please use Demo access or Google Sign-In.',
     };
   }
 
@@ -233,18 +233,18 @@ export const supabaseSignUpWithEmail = async (
   } catch (err: any) {
     return {
       success: false,
-      error: err?.message || 'Error signing up with Supabase.',
+      error: err?.message || 'Error creating user profile.',
     };
   }
 };
 
 /**
- * Direct Google OAuth Authentication via Supabase
+ * Direct Google OAuth Authentication
  */
 export const supabaseSignInWithGoogle = async (role: UserRole = 'worker') => {
   const client = getSupabase();
   if (!client) {
-    throw new Error('Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+    throw new Error('Authentication service is not configured.');
   }
 
   // Save selected role into localStorage so when OAuth returns, role is maintained

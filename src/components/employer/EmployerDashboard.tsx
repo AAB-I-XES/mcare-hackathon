@@ -125,29 +125,29 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ user, onLo
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-6 sm:py-8 space-y-6">
         {/* Top Employer Station Banner */}
-        <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-900 to-amber-800 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+        <div className="p-5 sm:p-6 rounded-xl bg-slate-900 text-white shadow-sm border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-400/20 text-amber-200 border border-amber-400/30">
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-amber-300 border border-slate-700">
                 Workplace Gate Terminal
               </span>
-              <span className="text-xs text-amber-200 font-semibold flex items-center gap-1">
+              <span className="text-xs text-slate-300 font-medium flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 Zero-Knowledge Privacy Shield
               </span>
             </div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
               {user.company || 'BuildTech Site Alpha'} · Gate Security
             </h1>
-            <p className="text-xs text-amber-100/80 max-w-xl">
+            <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
               Verify worker shift readiness, vaccination credentials, and physical restrictions instantly without exposing private diagnoses or clinical history.
             </p>
           </div>
 
-          <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 border-amber-700/50 pt-3 sm:pt-0">
-            <span className="text-[11px] text-amber-200 uppercase font-semibold">Supervisor</span>
+          <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 border-slate-800 pt-3 sm:pt-0 shrink-0">
+            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Supervisor</span>
             <span className="text-sm font-bold text-white">{user.name}</span>
-            <span className="text-[11px] text-emerald-300 font-mono-code font-bold flex items-center gap-1 mt-0.5">
+            <span className="text-[11px] text-emerald-400 font-mono-code font-bold flex items-center gap-1.5 mt-0.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               Gate Active
             </span>

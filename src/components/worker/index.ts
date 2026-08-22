@@ -5,3 +5,5 @@ export * from './MedicalTimeline';
 export * from './AccessLogsTab';
 export * from './ConsentRequestModal';
 export * from './DigitalPassportModal';
+export * from './DocumentScannerModal';
+export * from './DocumentViewerModal';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Smartphone, Mail, Database, AlertCircle } from 'lucide-react';
+import { Smartphone, Mail, AlertCircle } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { AppUser, UserRole } from '../../types';
 import {
@@ -42,8 +42,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [showGoogleModal, setShowGoogleModal] = useState(false);
   const [googleNameInput, setGoogleNameInput] = useState('Google User');
   const [googleEmailInput, setGoogleEmailInput] = useState('user@gmail.com');
-
-  const supabaseReady = isSupabaseConfigured();
 
   const handleDemoWorkerLogin = (healthId: string) => {
     const worker = getWorkerByHealthId(healthId);
@@ -150,21 +148,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
       <Header />
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8 md:py-12 flex flex-col items-center justify-center">
-        {/* Backend Connectivity Status Badge */}
-        <div className="mb-4 flex items-center gap-2">
-          {supabaseReady ? (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-              <Database className="w-3 h-3 text-emerald-600" />
-              Supabase Live Auth Connected
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
-              <Sparkles className="w-3 h-3 text-sky-600" />
-              Local Cloud Registry (Offline-Ready)
-            </span>
-          )}
-        </div>
-
         {!selectedRole ? (
           <RoleSelector
             onSelectRole={(role) => {
@@ -221,7 +204,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                 </div>
               )}
 
-              {/* Method Switcher Tabs (Phone PIN vs Supabase Email) */}
+              {/* Method Switcher Tabs (Phone PIN vs Email) */}
               <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-lg text-xs font-semibold text-slate-600">
                 <button
                   type="button"
@@ -252,17 +235,17 @@ export const AuthView: React.FC<AuthViewProps> = ({
                   }`}
                 >
                   <Mail className="w-3.5 h-3.5" />
-                  <span>Supabase Email</span>
+                  <span>Email & Password</span>
                 </button>
               </div>
 
-              {/* Google Sign-in Button powered directly by Supabase Auth */}
+              {/* Google Sign-in Button */}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
                 className="btn-minimal-google cursor-pointer"
-                title="Authenticate with Google via Supabase OAuth"
+                title="Continue with Google"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -282,13 +265,13 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
-                <span>{isLoading ? 'Connecting to Supabase...' : 'Continue with Google'}</span>
+                <span>{isLoading ? 'Authenticating...' : 'Continue with Google'}</span>
               </button>
 
               <div className="relative flex py-1 items-center">
                 <div className="flex-grow border-t border-slate-200"></div>
                 <span className="flex-shrink mx-3 text-[11px] font-semibold text-slate-400 uppercase">
-                  {authMethod === 'phone' ? 'or with Mobile SMS' : 'or with Supabase Credentials'}
+                  {authMethod === 'phone' ? 'or with Mobile SMS' : 'or with Email & Password'}
                 </span>
                 <div className="flex-grow border-t border-slate-200"></div>
               </div>

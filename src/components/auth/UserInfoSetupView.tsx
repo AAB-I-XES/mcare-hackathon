@@ -604,7 +604,7 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
                   <div className="space-y-3.5">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                        Preferred Language for Medical AI & Records
+                        Preferred Language for Medical Records
                       </label>
                       <select
                         value={preferredLang}
