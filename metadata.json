@@ -1,0 +1,6 @@
+{
+  "name": "MigrantCare",
+  "description": "Consent-secured, portable digital health credentials and medical records system for migrant workers, clinic staff, and employers.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
