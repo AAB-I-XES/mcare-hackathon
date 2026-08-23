@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Lock, Unlock, ShieldCheck, KeyRound, Sparkles } from 'lucide-react';
+import { Lock, Unlock, Check } from 'lucide-react';
 
 interface LockSuccessAnimationProps {
   title?: string;
@@ -8,27 +8,25 @@ interface LockSuccessAnimationProps {
 }
 
 export const LockSuccessAnimation: React.FC<LockSuccessAnimationProps> = ({
-  title = 'Securing Digital Health Identity',
-  subtitle = 'Generating zero-knowledge cryptographic keys...',
+  title = 'Securing Digital Health Profile',
+  subtitle = 'Generating encrypted credentials...',
   onAnimationEnd,
 }) => {
   const [isLocked, setIsLocked] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
-    // 1. Initial state: unlocked (400ms)
-    // 2. Snap to locked state at 650ms
+    // 1. Initial state: unlocked shackle
+    // 2. Lock shackle snaps down after 500ms
     const lockTimer = setTimeout(() => {
       setIsLocked(true);
-    }, 650);
+    }, 500);
 
-    // 3. Mark complete & trigger final callback
+    // 3. Complete and proceed
     const finishTimer = setTimeout(() => {
-      setIsFinished(true);
       if (onAnimationEnd) {
         onAnimationEnd();
       }
-    }, 2200);
+    }, 1800);
 
     return () => {
       clearTimeout(lockTimer);
@@ -39,108 +37,85 @@ export const LockSuccessAnimation: React.FC<LockSuccessAnimationProps> = ({
   return (
     <div
       id="lock-success-overlay"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-150"
     >
-      <div className="relative max-w-sm w-full bg-slate-900 border border-slate-700/80 rounded-2xl p-8 text-center shadow-2xl overflow-hidden">
-        {/* Subtle Background Glow */}
-        <div
-          className={`absolute -top-16 -left-16 w-48 h-48 rounded-full blur-3xl transition-colors duration-700 pointer-events-none ${
-            isLocked ? 'bg-emerald-500/25' : 'bg-amber-500/20'
-          }`}
-        />
-        <div
-          className={`absolute -bottom-16 -right-16 w-48 h-48 rounded-full blur-3xl transition-colors duration-700 pointer-events-none ${
-            isLocked ? 'bg-sky-500/25' : 'bg-amber-500/15'
-          }`}
-        />
-
-        {/* Lock Animation Stage */}
-        <div className="relative flex items-center justify-center my-4 h-32">
-          {/* Pulsing Concentric Security Rings */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-7 max-w-sm w-full shadow-lg text-center space-y-4">
+        {/* Minimalist Lock Icon Stage */}
+        <div className="relative flex items-center justify-center h-20">
           <div
-            className={`absolute w-28 h-28 rounded-full border border-dashed transition-all duration-700 ${
+            className={`w-14 h-14 rounded-full border flex items-center justify-center transition-all duration-300 ${
               isLocked
-                ? 'border-emerald-500/40 scale-110 animate-[spin_8s_linear_infinite]'
-                : 'border-amber-500/30 scale-100 animate-[spin_12s_linear_infinite]'
-            }`}
-          />
-          <div
-            className={`absolute w-20 h-20 rounded-full transition-all duration-700 ${
-              isLocked
-                ? 'bg-emerald-950/60 border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.3)]'
-                : 'bg-amber-950/50 border border-amber-500/40 shadow-[0_0_20px_rgba(245,158,11,0.2)]'
-            }`}
-          />
-
-          {/* SVG Animated Shackle and Padlock Container */}
-          <div
-            className={`relative z-10 flex items-center justify-center transition-transform duration-300 ${
-              isLocked ? 'scale-105' : 'scale-95'
+                ? 'bg-slate-900 border-slate-900 text-white scale-105'
+                : 'bg-slate-50 border-slate-200 text-slate-700'
             }`}
           >
-            {/* Custom Optical Animated Lock SVG */}
-            <div className="relative w-16 h-16 flex items-center justify-center">
-              {/* Shackle */}
-              <div
-                className={`absolute top-0 w-8 h-8 rounded-t-full border-4 transition-all duration-500 ease-out origin-bottom-left ${
+            {/* SVG Minimalist Padlock with Mechanical Shackle Animation */}
+            <svg
+              className="w-7 h-7"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              {/* Shackle: transitions from raised & open to closed */}
+              <path
+                d="M7 11V7a5 5 0 0 1 10 0v4"
+                className={`transition-all duration-300 ease-out origin-top ${
                   isLocked
-                    ? 'border-emerald-400 translate-y-2 translate-x-0 rotate-0'
-                    : 'border-amber-400 -translate-y-1 -translate-x-1 -rotate-25'
+                    ? 'translate-y-0 opacity-100 stroke-current'
+                    : '-translate-y-1.5 -translate-x-0.5 opacity-90 stroke-slate-500'
                 }`}
               />
-
-              {/* Padlock Body */}
-              <div
-                className={`absolute bottom-0 w-12 h-10 rounded-xl border-2 flex items-center justify-center transition-colors duration-500 shadow-md ${
-                  isLocked
-                    ? 'bg-emerald-600 border-emerald-400 text-white'
-                    : 'bg-amber-600 border-amber-400 text-amber-100'
-                }`}
-              >
-                {isLocked ? (
-                  <ShieldCheck className="w-5 h-5 text-white animate-in zoom-in-75 duration-300" />
-                ) : (
-                  <KeyRound className="w-4 h-4 text-amber-100 animate-pulse" />
-                )}
-              </div>
-            </div>
+              {/* Body */}
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              {/* Center keyhole / checkmark */}
+              {isLocked ? (
+                <path
+                  d="m9 16 2 2 4-4"
+                  strokeWidth="2.5"
+                  className="animate-in zoom-in-50 duration-200"
+                />
+              ) : (
+                <circle cx="12" cy="16" r="1.25" fill="currentColor" />
+              )}
+            </svg>
           </div>
         </div>
 
-        {/* Status Text & Cryptographic Stage */}
-        <div className="space-y-2 relative z-10">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase transition-colors duration-500 border">
+        {/* Text & Status Information */}
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-colors duration-300 bg-slate-100 text-slate-700 border border-slate-200">
             {isLocked ? (
-              <span className="bg-emerald-950 text-emerald-300 border-emerald-500/40 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-emerald-400" />
-                Zero-Knowledge Encryption Locked
-              </span>
+              <>
+                <Check className="w-3 h-3 text-emerald-600" />
+                <span>Encrypted & Secured</span>
+              </>
             ) : (
-              <span className="bg-amber-950 text-amber-300 border-amber-500/40 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                <Unlock className="w-3 h-3 text-amber-400" />
-                Encrypting Personal Vault...
-              </span>
+              <>
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-pulse" />
+                <span>Securing Passport</span>
+              </>
             )}
           </div>
 
-          <h3 className="text-lg font-bold text-white tracking-tight">
-            {isLocked ? 'Identity Secured & Encrypted' : title}
+          <h3 className="text-base font-semibold text-slate-900">
+            {isLocked ? 'Registration Complete' : title}
           </h3>
 
-          <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
             {isLocked
-              ? 'Cryptographic pass activated. Personal medical records are secured under your private consent firewall.'
+              ? 'Your cryptographic health record has been established.'
               : subtitle}
           </p>
         </div>
 
-        {/* Animated Progress Bar */}
-        <div className="mt-6 w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+        {/* Minimal Progress Indicator */}
+        <div className="w-full bg-slate-100 rounded-full h-1 overflow-hidden">
           <div
-            className={`h-full transition-all duration-1000 ease-out rounded-full ${
-              isLocked
-                ? 'w-full bg-gradient-to-r from-emerald-500 to-sky-400'
-                : 'w-1/2 bg-gradient-to-r from-amber-500 to-amber-400'
+            className={`h-full bg-slate-900 transition-all duration-700 ease-out rounded-full ${
+              isLocked ? 'w-full' : 'w-1/3'
             }`}
           />
         </div>
