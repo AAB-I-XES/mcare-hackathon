@@ -113,7 +113,7 @@ export const mapSupabaseUserToAppUser = (
     blood_group: meta.blood_group || 'O+',
     allergies: meta.allergies || '',
     chronic_conditions: Array.isArray(meta.chronic_conditions) ? meta.chronic_conditions : [],
-    preferred_language: (meta.preferred_language as 'en' | 'es') || 'en',
+    preferred_language: (meta.preferred_language as 'en' | 'hi' | 'bn' | 'as' | 'es') || 'en',
     photo_url:
       meta.photo_url ||
       meta.avatar_url ||
