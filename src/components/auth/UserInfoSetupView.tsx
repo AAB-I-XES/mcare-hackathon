@@ -19,7 +19,6 @@ import {
   Building,
   FileBadge,
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { useI18n, Locale, SUPPORTED_LANGUAGES } from '../../i18n';
 import { AppUser, UserRole } from '../../types';
 import {
@@ -30,6 +29,7 @@ import {
 import { LanguageToggle } from '../common/LanguageToggle';
 import { BLOOD_GROUPS, COMMON_CHRONIC_CONDITIONS } from '../../constants/medicalOptions';
 import { PendingSetupUser } from '../../hooks/useAuth';
+import { LockSuccessAnimation } from './LockSuccessAnimation';
 
 interface UserInfoSetupViewProps {
   pendingUser: PendingSetupUser;
@@ -48,6 +48,7 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successAuthPayload, setSuccessAuthPayload] = useState<{ user: AppUser; token: string } | null>(null);
 
   // Worker Form State
   const [fullName, setFullName] = useState(pendingUser.name || '');
@@ -121,17 +122,9 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
         recommendations: 'Fit for all standard workplace and industrial assignments.',
       });
 
-      // 2. Trigger confetti celebration
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
-
       const token = pendingUser.token || `token_user_${worker.id}`;
-      setTimeout(() => {
-        onComplete(worker, token);
-      }, 400);
+      // Trigger Lock Securing Animation
+      setSuccessAuthPayload({ user: worker, token });
     } catch (err: any) {
       setErrorMessage(err?.message || 'Failed to complete profile setup');
       setIsSubmitting(false);
@@ -164,16 +157,9 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
         email: pendingUser.email,
       });
 
-      confetti({
-        particleCount: 90,
-        spread: 60,
-        origin: { y: 0.6 },
-      });
-
       const token = pendingUser.token || `token_user_${provider.id}`;
-      setTimeout(() => {
-        onComplete(provider, token);
-      }, 400);
+      // Trigger Lock Securing Animation
+      setSuccessAuthPayload({ user: provider, token });
     } catch (err: any) {
       setErrorMessage(err?.message || 'Failed to complete clinic profile setup');
       setIsSubmitting(false);
@@ -201,16 +187,9 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
         email: pendingUser.email,
       });
 
-      confetti({
-        particleCount: 90,
-        spread: 60,
-        origin: { y: 0.6 },
-      });
-
       const token = pendingUser.token || `token_user_${employer.id}`;
-      setTimeout(() => {
-        onComplete(employer, token);
-      }, 400);
+      // Trigger Lock Securing Animation
+      setSuccessAuthPayload({ user: employer, token });
     } catch (err: any) {
       setErrorMessage(err?.message || 'Failed to complete employer profile setup');
       setIsSubmitting(false);
@@ -795,6 +774,17 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
           )}
         </div>
       </main>
+
+      {/* Lock Securing Cryptographic Animation Modal */}
+      {successAuthPayload && (
+        <LockSuccessAnimation
+          title="Securing Digital Health Identity"
+          subtitle="Activating zero-knowledge cryptographic encryption..."
+          onAnimationEnd={() => {
+            onComplete(successAuthPayload.user, successAuthPayload.token);
+          }}
+        />
+      )}
     </div>
   );
 };

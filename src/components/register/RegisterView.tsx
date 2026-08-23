@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ArrowLeft, ShieldCheck, AlertCircle } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { useI18n, Locale } from '../../i18n';
 import { AppUser } from '../../types';
 import { registerWorker } from '../../services';
@@ -9,6 +8,7 @@ import { StepIndicator } from './StepIndicator';
 import { StepPersonal } from './StepPersonal';
 import { StepMedical } from './StepMedical';
 import { StepPreferences } from './StepPreferences';
+import { LockSuccessAnimation } from '../auth/LockSuccessAnimation';
 
 interface RegisterViewProps {
   phone: string;
@@ -37,6 +37,7 @@ export const RegisterView: React.FC<RegisterViewProps> = ({
   const [emergencyContact, setEmergencyContact] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successPayload, setSuccessPayload] = useState<{ user: AppUser; token: string } | null>(null);
 
   const toggleCondition = (cond: string) => {
     setSelectedConditions((prev) =>
@@ -75,15 +76,10 @@ export const RegisterView: React.FC<RegisterViewProps> = ({
         emergency_contact: emergencyContact || 'Contact on file',
       });
 
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.6 },
+      setSuccessPayload({
+        user: { ...newWorker, role: 'worker' },
+        token: `token_reg_${newWorker.id}`,
       });
-
-      setTimeout(() => {
-        onRegisterSuccess({ ...newWorker, role: 'worker' }, `token_reg_${newWorker.id}`);
-      }, 400);
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to create Health Profile');
       setIsSubmitting(false);
@@ -161,6 +157,17 @@ export const RegisterView: React.FC<RegisterViewProps> = ({
           )}
         </div>
       </main>
+
+      {/* Lock Securing Cryptographic Animation Modal */}
+      {successPayload && (
+        <LockSuccessAnimation
+          title="Securing Digital Health Identity"
+          subtitle="Activating zero-knowledge cryptographic encryption..."
+          onAnimationEnd={() => {
+            onRegisterSuccess(successPayload.user, successPayload.token);
+          }}
+        />
+      )}
 
       <footer className="w-full py-4 text-center text-xs text-slate-400 border-t border-slate-200 bg-white">
         <p>MigrantCare Encrypted Health Passport Protocol</p>

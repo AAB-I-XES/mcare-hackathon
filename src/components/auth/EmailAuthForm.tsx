@@ -16,6 +16,7 @@ import {
   signInWithEmailSupabase,
   signUpWithEmailSupabase,
 } from '../../services';
+import { LockSuccessAnimation } from './LockSuccessAnimation';
 
 interface EmailAuthFormProps {
   role: UserRole;
@@ -35,6 +36,7 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess })
   const [phone, setPhone] = useState('+65 8123 4567');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [pendingLockSuccess, setPendingLockSuccess] = useState<{ user: AppUser; token: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +127,7 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess })
               preferred_language: 'en',
               email: normalizedEmail,
             });
-            onSuccess(worker, token);
+            setPendingLockSuccess({ user: worker, token });
           } else if (role === 'provider') {
             const prov = registerProvider({
               id: userId,
@@ -134,7 +136,7 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess })
               reg_no: `MCR-2024-${Math.floor(1000 + Math.random() * 9000)}`,
               email: normalizedEmail,
             });
-            onSuccess(prov, token);
+            setPendingLockSuccess({ user: prov, token });
           } else {
             const emp = registerEmployer({
               id: userId,
@@ -142,7 +144,7 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess })
               company: company.trim() || 'Industrial Operations Group',
               email: normalizedEmail,
             });
-            onSuccess(emp, token);
+            setPendingLockSuccess({ user: emp, token });
           }
           setIsLoading(false);
           return;
@@ -182,7 +184,7 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess })
               preferred_language: 'en',
               email: normalizedEmail,
             });
-            onSuccess(worker, `token_auth_${worker.id}`);
+            setPendingLockSuccess({ user: worker, token: `token_auth_${worker.id}` });
           } else if (role === 'provider') {
             const prov = registerProvider({
               name: name.trim(),
@@ -190,14 +192,14 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess })
               reg_no: `MCR-2024-${Math.floor(1000 + Math.random() * 9000)}`,
               email: normalizedEmail,
             });
-            onSuccess(prov, `token_auth_${prov.id}`);
+            setPendingLockSuccess({ user: prov, token: `token_auth_${prov.id}` });
           } else {
             const emp = registerEmployer({
               name: name.trim(),
               company: company.trim() || 'Industrial Operations Group',
               email: normalizedEmail,
             });
-            onSuccess(emp, `token_auth_${emp.id}`);
+            setPendingLockSuccess({ user: emp, token: `token_auth_${emp.id}` });
           }
         }
       }, 300);
@@ -366,6 +368,17 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess })
           )}
         </button>
       </form>
+
+      {/* Lock Securing Cryptographic Animation Modal */}
+      {pendingLockSuccess && (
+        <LockSuccessAnimation
+          title="Securing Digital Health Identity"
+          subtitle="Activating zero-knowledge cryptographic encryption..."
+          onAnimationEnd={() => {
+            onSuccess(pendingLockSuccess.user, pendingLockSuccess.token);
+          }}
+        />
+      )}
     </div>
   );
 };
