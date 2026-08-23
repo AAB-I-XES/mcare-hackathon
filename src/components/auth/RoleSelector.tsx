@@ -1,21 +1,17 @@
 import React from 'react';
-import { User, Stethoscope, Building2, ArrowRight, QrCode, Lock, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { User, Stethoscope, Building2, ArrowRight, QrCode, Lock, ShieldCheck } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { UserRole } from '../../types';
-import { QuickDemoPicker } from './QuickDemoPicker';
 
 interface RoleSelectorProps {
   onSelectRole: (role: UserRole) => void;
-  onDemoWorker: (healthId: string) => void;
-  onDemoDoctor: () => void;
-  onDemoEmployer: () => void;
+  onDemoWorker?: (healthId: string) => void;
+  onDemoDoctor?: () => void;
+  onDemoEmployer?: () => void;
 }
 
 export const RoleSelector: React.FC<RoleSelectorProps> = ({
   onSelectRole,
-  onDemoWorker,
-  onDemoDoctor,
-  onDemoEmployer,
 }) => {
   const { t } = useI18n();
 
@@ -157,12 +153,6 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({
               <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition" />
             </button>
           </div>
-
-          <QuickDemoPicker
-            onSelectWorker={onDemoWorker}
-            onSelectDoctor={onDemoDoctor}
-            onSelectEmployer={onDemoEmployer}
-          />
         </div>
       </div>
     </div>

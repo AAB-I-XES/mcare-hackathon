@@ -52,8 +52,8 @@ export const ScannerModal: FC<ScannerModalProps> = ({ onScan, onClose }) => {
             {/* Scanning line animation */}
             <div className="w-full h-0.5 bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
 
-            <div className="absolute bottom-3 text-[10px] font-mono-code text-emerald-400 bg-slate-900/80 px-2 py-0.5 rounded">
-              scanning thr qr please wait...
+            <div className="absolute bottom-3 text-[10px] font-mono-code text-emerald-400 bg-slate-900/90 px-2.5 py-0.5 rounded border border-emerald-500/30">
+              Align QR pass within boundary...
             </div>
           </div>
 

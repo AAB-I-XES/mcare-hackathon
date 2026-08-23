@@ -12,15 +12,15 @@ export interface LanguageOption {
   code: Locale;
   name: string;
   nativeName: string;
-  flag: string;
+  badge: string;
 }
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'bn', name: 'Bengali', nativeName: 'বাংলা', flag: '🇮🇳' },
-  { code: 'as', name: 'Assamese', nativeName: 'অসমীয়া', flag: '🇮🇳' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
+  { code: 'en', name: 'English', nativeName: 'English', badge: 'EN' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', badge: 'HI' },
+  { code: 'bn', name: 'Bengali', nativeName: 'বাংলা', badge: 'BN' },
+  { code: 'as', name: 'Assamese', nativeName: 'অসমীয়া', badge: 'AS' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', badge: 'ES' },
 ];
 
 export interface I18nContextType {

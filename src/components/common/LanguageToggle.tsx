@@ -69,7 +69,9 @@ export const LanguageToggle: React.FC<LanguageToggleProps> = ({
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="text-sm leading-none">{lang.flag}</span>
+                  <span className="w-6 h-5 rounded flex items-center justify-center text-[10px] font-mono-code font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                    {lang.badge}
+                  </span>
                   <div>
                     <div className="font-medium text-slate-800">{lang.nativeName}</div>
                     <div className="text-[10px] text-slate-400">{lang.name}</div>
