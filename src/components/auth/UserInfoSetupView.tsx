@@ -21,7 +21,7 @@ import {
   FileBadge,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { useI18n, Locale } from '../../i18n';
+import { useI18n, Locale, SUPPORTED_LANGUAGES } from '../../i18n';
 import { AppUser, UserRole, WorkerUser, ProviderUser, EmployerUser } from '../../types';
 import {
   registerWorker,
@@ -611,8 +611,11 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
                         onChange={(e) => setPreferredLang(e.target.value as Locale)}
                         className="w-full minimal-input px-3.5 py-2.5 bg-white cursor-pointer"
                       >
-                        <option value="en">English</option>
-                        <option value="es">Español (Spanish)</option>
+                        {SUPPORTED_LANGUAGES.map((lang) => (
+                          <option key={lang.code} value={lang.code}>
+                            {lang.nativeName} ({lang.name})
+                          </option>
+                        ))}
                       </select>
                     </div>
 

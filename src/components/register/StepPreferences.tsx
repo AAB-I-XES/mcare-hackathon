@@ -1,7 +1,6 @@
 import React from 'react';
 import { ArrowLeft, CheckCircle2, UserCheck } from 'lucide-react';
-import { useI18n } from '../../i18n';
-import { Locale } from '../../i18n';
+import { useI18n, Locale, SUPPORTED_LANGUAGES } from '../../i18n';
 
 interface StepPreferencesProps {
   preferredLang: Locale;
@@ -43,8 +42,11 @@ export const StepPreferences: React.FC<StepPreferencesProps> = ({
             onChange={(e) => setPreferredLang(e.target.value as Locale)}
             className="w-full minimal-input px-3.5 py-2.5 bg-white cursor-pointer"
           >
-            <option value="en">English</option>
-            <option value="es">Español (Spanish)</option>
+            {SUPPORTED_LANGUAGES.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.nativeName} ({lang.name})
+              </option>
+            ))}
           </select>
         </div>
 

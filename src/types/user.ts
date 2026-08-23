@@ -17,7 +17,7 @@ export interface WorkerUser extends BaseUser {
   blood_group: string;
   allergies: string;
   chronic_conditions: string[];
-  preferred_language: 'en' | 'es';
+  preferred_language: 'en' | 'hi' | 'bn' | 'as' | 'es';
   photo_url: string;
   emergency_contact?: string;
   status: 'Fit for Work' | 'Restricted' | 'Under Observation';
