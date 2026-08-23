@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Smartphone, Mail, AlertCircle } from 'lucide-react';
+import { Smartphone, Mail, AlertCircle, Settings, KeyRound, ExternalLink, Loader2 } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { AppUser, UserRole } from '../../types';
 import {
@@ -7,6 +7,8 @@ import {
   getWorkerByHealthId,
   getDemoProvider,
   getDemoEmployer,
+  isSupabaseConfigured,
+  signInWithGoogleOAuth,
 } from '../../services';
 import { Header, Footer, Badge } from '../common';
 import { RoleSelector } from './RoleSelector';
@@ -37,9 +39,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [clinicRegNo, setClinicRegNo] = useState('MCR-2018-9482');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showGoogleModal, setShowGoogleModal] = useState(false);
-  const [googleNameInput, setGoogleNameInput] = useState('Google User');
-  const [googleEmailInput, setGoogleEmailInput] = useState('user@gmail.com');
+  const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
+  const [showConfigModal, setShowConfigModal] = useState(false);
 
   const handleDemoWorkerLogin = (healthId: string) => {
     const worker = getWorkerByHealthId(healthId);
@@ -96,19 +97,35 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }, 350);
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setErrorMessage('');
-    setShowGoogleModal(true);
+    setIsGoogleSigningIn(true);
+
+    // Check if Supabase URL and Anon Key are configured
+    if (!isSupabaseConfigured()) {
+      setIsGoogleSigningIn(false);
+      setShowConfigModal(true);
+      return;
+    }
+
+    try {
+      // Real Supabase OAuth flow
+      await signInWithGoogleOAuth(selectedRole || 'worker');
+    } catch (err: any) {
+      setIsGoogleSigningIn(false);
+      setErrorMessage(
+        err?.message || 'Failed to initialize Google login via Supabase. Please verify Supabase OAuth settings.'
+      );
+    }
   };
 
-  const handleConfirmGoogleMockSignIn = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowGoogleModal(false);
+  const handleDevGoogleBypass = () => {
+    setShowConfigModal(false);
     if (onStartGoogleSetup) {
       onStartGoogleSetup({
-        id: `google_${Date.now()}`,
-        name: googleNameInput.trim() || 'Google User',
-        email: googleEmailInput.trim() || 'user@gmail.com',
+        id: `oauth_demo_${Date.now()}`,
+        name: 'Google Auth User',
+        email: 'user.oauth@gmail.com',
         role: selectedRole || 'worker',
       });
     }
@@ -221,33 +238,39 @@ export const AuthView: React.FC<AuthViewProps> = ({
                 </button>
               </div>
 
-              {/* Google Sign-in Button */}
+              {/* Real Google Sign-in Button via Supabase OAuth */}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                disabled={isLoading}
+                disabled={isGoogleSigningIn || isLoading}
                 className="btn-minimal-google cursor-pointer"
                 title="Continue with Google"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  />
-                </svg>
-                <span>{isLoading ? 'Authenticating...' : 'Continue with Google'}</span>
+                {isGoogleSigningIn ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-slate-700" />
+                ) : (
+                  <svg className="w-4 h-4" viewBox="0 0 24 24">
+                    <path
+                      fill="#4285F4"
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                    />
+                  </svg>
+                )}
+                <span>
+                  {isGoogleSigningIn ? 'Connecting to Supabase Google Auth...' : 'Continue with Google'}
+                </span>
               </button>
 
               <div className="relative flex py-1 items-center">
@@ -295,87 +318,50 @@ export const AuthView: React.FC<AuthViewProps> = ({
             </div>
           </div>
         )}
-        {/* Google Sign-in Account Dialog */}
-        {showGoogleModal && (
+
+        {/* Supabase Configuration & OAuth Information Dialog */}
+        {showConfigModal && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                    />
-                  </svg>
+                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200">
+                  <KeyRound className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">Sign in with Google</h3>
-                  <p className="text-xs text-slate-500">Connect account & proceed to user setup</p>
+                  <h3 className="text-base font-bold text-slate-900">Supabase OAuth Setup</h3>
+                  <p className="text-xs text-slate-500">Live Google Sign-In with Supabase Auth</p>
                 </div>
               </div>
 
-              <form onSubmit={handleConfirmGoogleMockSignIn} className="space-y-3.5">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Google Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={googleNameInput}
-                    onChange={(e) => setGoogleNameInput(e.target.value)}
-                    placeholder="e.g. Tareq Rahman"
-                    className="w-full minimal-input px-3.5 py-2 text-sm"
-                    required
-                    autoFocus
-                  />
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-2 leading-relaxed">
+                <p>
+                  The application is configured to authenticate directly with <strong>Supabase Google OAuth</strong>.
+                </p>
+                <div className="bg-white p-2.5 rounded-lg border border-slate-200 font-mono-code text-[11px] text-slate-800 space-y-1">
+                  <div>VITE_SUPABASE_URL=https://xyz.supabase.co</div>
+                  <div>VITE_SUPABASE_ANON_KEY=eyJhbGciOi...</div>
                 </div>
+                <p className="text-slate-500 text-[11px]">
+                  Provide these environment variables in your project settings to enable live Google redirects and user synchronization.
+                </p>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Google Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={googleEmailInput}
-                    onChange={(e) => setGoogleEmailInput(e.target.value)}
-                    placeholder="e.g. tareq.rahman@gmail.com"
-                    className="w-full minimal-input px-3.5 py-2 text-sm"
-                    required
-                  />
-                </div>
-
-                <div className="p-3 bg-sky-50 rounded-lg border border-sky-200 text-xs text-sky-900 leading-relaxed">
-                  After authenticating your Google identity, you will be guided through the <strong>Digital Health Profile Setup</strong> to configure your medical details, emergency contact, and secure pass.
-                </div>
-
-                <div className="grid grid-cols-2 gap-2.5 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowGoogleModal(false)}
-                    className="btn-minimal-secondary cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn-minimal-primary bg-slate-900 hover:bg-slate-800 text-white cursor-pointer"
-                  >
-                    Continue to Setup →
-                  </button>
-                </div>
-              </form>
+              <div className="grid grid-cols-2 gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowConfigModal(false)}
+                  className="btn-minimal-secondary cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDevGoogleBypass}
+                  className="btn-minimal-primary bg-slate-900 hover:bg-slate-800 text-white cursor-pointer"
+                >
+                  Test Profile Setup →
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -385,3 +371,4 @@ export const AuthView: React.FC<AuthViewProps> = ({
     </div>
   );
 };
+

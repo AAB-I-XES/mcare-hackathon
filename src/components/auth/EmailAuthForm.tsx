@@ -12,6 +12,9 @@ import {
   getWorkerByEmail,
   getDemoProvider,
   getDemoEmployer,
+  isSupabaseConfigured,
+  signInWithEmailSupabase,
+  signUpWithEmailSupabase,
 } from '../../services';
 
 interface EmailAuthFormProps {
@@ -48,60 +51,160 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess })
     }
 
     setIsLoading(true);
+    const normalizedEmail = email.trim().toLowerCase();
 
-    setTimeout(() => {
-      setIsLoading(false);
-      const normalizedEmail = email.trim().toLowerCase();
+    try {
+      // 1. If Supabase is configured, use Supabase Auth
+      if (isSupabaseConfigured()) {
+        if (mode === 'signin') {
+          const authData = await signInWithEmailSupabase(normalizedEmail, password);
+          const sbUser = authData.user;
+          const token = authData.session?.access_token || `token_sb_${sbUser.id}`;
 
-      if (mode === 'signin') {
-        if (role === 'worker') {
-          const worker = getWorkerByEmail(normalizedEmail) || getWorkers()[0];
-          onSuccess({ ...worker, role: 'worker', email: normalizedEmail }, `token_auth_${worker.id}`);
-        } else if (role === 'provider') {
-          const prov = getProviderByEmail(normalizedEmail) || getDemoProvider();
-          onSuccess({ ...prov, role: 'provider', email: normalizedEmail }, `token_auth_${prov.id}`);
+          if (role === 'worker') {
+            const worker = getWorkerByEmail(normalizedEmail) || registerWorker({
+              id: sbUser.id,
+              name: sbUser.user_metadata?.full_name || normalizedEmail.split('@')[0],
+              dob: '1996-01-15',
+              gender: 'Male',
+              phone: phone.trim() || '+65 8123 4567',
+              blood_group: 'O+',
+              allergies: '',
+              chronic_conditions: [],
+              preferred_language: 'en',
+              email: normalizedEmail,
+            });
+            onSuccess(worker, token);
+          } else if (role === 'provider') {
+            const prov = getProviderByEmail(normalizedEmail) || registerProvider({
+              id: sbUser.id,
+              name: sbUser.user_metadata?.full_name || normalizedEmail.split('@')[0],
+              facility: facility.trim() || 'Community Health Clinic',
+              reg_no: `MCR-2024-${Math.floor(1000 + Math.random() * 9000)}`,
+              email: normalizedEmail,
+            });
+            onSuccess(prov, token);
+          } else {
+            const emp = getEmployerByEmail(normalizedEmail) || registerEmployer({
+              id: sbUser.id,
+              name: sbUser.user_metadata?.full_name || normalizedEmail.split('@')[0],
+              company: company.trim() || 'Industrial Operations Group',
+              email: normalizedEmail,
+            });
+            onSuccess(emp, token);
+          }
+          setIsLoading(false);
+          return;
         } else {
-          const emp = getEmployerByEmail(normalizedEmail) || getDemoEmployer();
-          onSuccess({ ...emp, role: 'employer', email: normalizedEmail }, `token_auth_${emp.id}`);
-        }
-      } else {
-        // Sign up
-        if (!name.trim()) {
-          setErrorMessage('Please enter your name for registration.');
+          // Mode === 'signup' via Supabase Auth
+          if (!name.trim()) {
+            setErrorMessage('Please enter your name for registration.');
+            setIsLoading(false);
+            return;
+          }
+
+          const signUpData = await signUpWithEmailSupabase(normalizedEmail, password, {
+            full_name: name.trim(),
+            role,
+          });
+
+          const sbUser = signUpData.user;
+          const token = signUpData.session?.access_token || `token_sb_${sbUser?.id || Date.now()}`;
+          const userId = sbUser?.id;
+
+          if (role === 'worker') {
+            const worker = registerWorker({
+              id: userId,
+              name: name.trim(),
+              dob: '1996-01-15',
+              gender: 'Male',
+              phone: phone.trim() || '+65 8123 4567',
+              blood_group: 'O+',
+              allergies: '',
+              chronic_conditions: [],
+              preferred_language: 'en',
+              email: normalizedEmail,
+            });
+            onSuccess(worker, token);
+          } else if (role === 'provider') {
+            const prov = registerProvider({
+              id: userId,
+              name: name.trim(),
+              facility: facility.trim() || 'Community Medical Clinic',
+              reg_no: `MCR-2024-${Math.floor(1000 + Math.random() * 9000)}`,
+              email: normalizedEmail,
+            });
+            onSuccess(prov, token);
+          } else {
+            const emp = registerEmployer({
+              id: userId,
+              name: name.trim(),
+              company: company.trim() || 'Industrial Operations Group',
+              email: normalizedEmail,
+            });
+            onSuccess(emp, token);
+          }
+          setIsLoading(false);
           return;
         }
-
-        if (role === 'worker') {
-          const worker = registerWorker({
-            name: name.trim(),
-            dob: '1996-01-15',
-            gender: 'Male',
-            phone: phone.trim() || '+65 8123 4567',
-            blood_group: 'O+',
-            allergies: '',
-            chronic_conditions: [],
-            preferred_language: 'en',
-            email: normalizedEmail,
-          });
-          onSuccess(worker, `token_auth_${worker.id}`);
-        } else if (role === 'provider') {
-          const prov = registerProvider({
-            name: name.trim(),
-            facility: facility.trim() || 'Community Medical Clinic',
-            reg_no: `MCR-2024-${Math.floor(1000 + Math.random() * 9000)}`,
-            email: normalizedEmail,
-          });
-          onSuccess(prov, `token_auth_${prov.id}`);
-        } else {
-          const emp = registerEmployer({
-            name: name.trim(),
-            company: company.trim() || 'Industrial Operations Group',
-            email: normalizedEmail,
-          });
-          onSuccess(emp, `token_auth_${emp.id}`);
-        }
       }
-    }, 300);
+
+      // 2. Fallback / Local Storage Mode if Supabase is unconfigured
+      setTimeout(() => {
+        setIsLoading(false);
+        if (mode === 'signin') {
+          if (role === 'worker') {
+            const worker = getWorkerByEmail(normalizedEmail) || getWorkers()[0];
+            onSuccess({ ...worker, role: 'worker', email: normalizedEmail }, `token_auth_${worker.id}`);
+          } else if (role === 'provider') {
+            const prov = getProviderByEmail(normalizedEmail) || getDemoProvider();
+            onSuccess({ ...prov, role: 'provider', email: normalizedEmail }, `token_auth_${prov.id}`);
+          } else {
+            const emp = getEmployerByEmail(normalizedEmail) || getDemoEmployer();
+            onSuccess({ ...emp, role: 'employer', email: normalizedEmail }, `token_auth_${emp.id}`);
+          }
+        } else {
+          // Sign up locally
+          if (!name.trim()) {
+            setErrorMessage('Please enter your name for registration.');
+            return;
+          }
+
+          if (role === 'worker') {
+            const worker = registerWorker({
+              name: name.trim(),
+              dob: '1996-01-15',
+              gender: 'Male',
+              phone: phone.trim() || '+65 8123 4567',
+              blood_group: 'O+',
+              allergies: '',
+              chronic_conditions: [],
+              preferred_language: 'en',
+              email: normalizedEmail,
+            });
+            onSuccess(worker, `token_auth_${worker.id}`);
+          } else if (role === 'provider') {
+            const prov = registerProvider({
+              name: name.trim(),
+              facility: facility.trim() || 'Community Medical Clinic',
+              reg_no: `MCR-2024-${Math.floor(1000 + Math.random() * 9000)}`,
+              email: normalizedEmail,
+            });
+            onSuccess(prov, `token_auth_${prov.id}`);
+          } else {
+            const emp = registerEmployer({
+              name: name.trim(),
+              company: company.trim() || 'Industrial Operations Group',
+              email: normalizedEmail,
+            });
+            onSuccess(emp, `token_auth_${emp.id}`);
+          }
+        }
+      }, 300);
+    } catch (err: any) {
+      setIsLoading(false);
+      setErrorMessage(err?.message || 'Authentication failed. Please check your details and try again.');
+    }
   };
 
   return (
@@ -266,3 +369,4 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess })
     </div>
   );
 };
+
