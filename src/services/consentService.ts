@@ -28,6 +28,7 @@ export const addAccessLog = (data: {
 
   allLogs.unshift(newLog);
   setItem(STORAGE_KEYS.LOGS, allLogs);
+
   return newLog;
 };
 
@@ -81,6 +82,7 @@ export const createAccessRequest = (data: {
 
   all.unshift(newReq);
   setItem(STORAGE_KEYS.REQUESTS, all);
+
   return { request: newReq, alreadyGranted: false };
 };
 
@@ -93,6 +95,7 @@ export const respondToRequest = (
   if (index === -1) return false;
 
   const req = all[index];
+
   if (action === 'approve') {
     req.status = 'approved';
     req.expires_at = new Date(Date.now() + 5 * 60 * 1000).toISOString();
@@ -106,6 +109,7 @@ export const respondToRequest = (
     });
   } else {
     req.status = 'denied';
+
     addAccessLog({
       worker_id: req.worker_id,
       viewer_name: req.provider_name,
@@ -117,6 +121,7 @@ export const respondToRequest = (
 
   all[index] = req;
   setItem(STORAGE_KEYS.REQUESTS, all);
+
   return true;
 };
 

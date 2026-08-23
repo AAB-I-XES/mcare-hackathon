@@ -80,4 +80,3 @@ export const setItem = <T>(key: string, value: T): void => {
 export * from './authService';
 export * from './consentService';
 export * from './medicalService';
-

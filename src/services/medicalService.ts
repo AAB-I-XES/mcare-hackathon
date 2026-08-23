@@ -73,7 +73,7 @@ export const registerWorker = (data: {
     status: data.status || (existingIndex >= 0 ? workers[existingIndex].status : 'Fit for Work'),
     vaccinated: data.vaccinated !== undefined ? data.vaccinated : true,
     vaccine_count: data.vaccine_count !== undefined ? data.vaccine_count : 3,
-    recommendations: data.recommendations || (existingIndex >= 0 ? workers[existingIndex].recommendations : 'Fit for all standard workplace and job site assignments.'),
+    recommendations: data.recommendations || (existingIndex >= 0 ? workers[existingIndex].recommendations : 'Fit for standard workplace assignments.'),
     email: data.email || (existingIndex >= 0 ? workers[existingIndex].email : undefined),
     created_at: existingIndex >= 0 ? workers[existingIndex].created_at : new Date().toISOString(),
   };
@@ -90,8 +90,8 @@ export const registerWorker = (data: {
     addRecord({
       worker_id: newWorker.id,
       type: 'visit',
-      provider_name: 'Migrant Health Registration Registry',
-      facility_name: 'National Digital Health Exchange',
+      provider_name: 'Health Registration Authority',
+      facility_name: 'Digital Health Service Exchange',
       notes: `Initial Digital Health Profile issued. Blood type ${newWorker.blood_group} documented. Vaccination verified.`,
     });
   }

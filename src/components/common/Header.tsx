@@ -1,5 +1,5 @@
-import React from 'react';
-import { ShieldCheck, LogOut, Stethoscope, Building2, User, Activity } from 'lucide-react';
+import { FC } from 'react';
+import { ShieldCheck, LogOut, Stethoscope, Building2 } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { AppUser } from '../../types';
 import { LanguageToggle } from './LanguageToggle';
@@ -9,7 +9,7 @@ interface HeaderProps {
   onLogout?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
+export const Header: FC<HeaderProps> = ({ user, onLogout }) => {
   const { t } = useI18n();
 
   return (
@@ -103,4 +103,3 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
     </header>
   );
 };
-

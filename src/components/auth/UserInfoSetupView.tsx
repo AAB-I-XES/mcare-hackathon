@@ -14,7 +14,6 @@ import {
   AlertCircle,
   LogOut,
   Mail,
-  Sparkles,
   Phone,
   Calendar,
   Building,
@@ -22,12 +21,11 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useI18n, Locale, SUPPORTED_LANGUAGES } from '../../i18n';
-import { AppUser, UserRole, WorkerUser, ProviderUser, EmployerUser } from '../../types';
+import { AppUser, UserRole } from '../../types';
 import {
   registerWorker,
   registerProvider,
   registerEmployer,
-  updateSupabaseUserProfile,
 } from '../../services';
 import { LanguageToggle } from '../common/LanguageToggle';
 import { BLOOD_GROUPS, COMMON_CHRONIC_CONDITIONS } from '../../constants/medicalOptions';
@@ -103,7 +101,7 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
     setIsSubmitting(true);
 
     try {
-      // 1. Save worker to database
+      // 1. Save worker to local database
       const worker = registerWorker({
         id: pendingUser.id,
         name: fullName.trim(),
@@ -123,30 +121,14 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
         recommendations: 'Fit for all standard workplace and industrial assignments.',
       });
 
-      // 2. Update Supabase metadata if logged in with Supabase
-      await updateSupabaseUserProfile({
-        role: 'worker',
-        name: fullName.trim(),
-        dob,
-        gender,
-        phone: phone.trim(),
-        blood_group: bloodGroup,
-        allergies: allergies.trim(),
-        chronic_conditions: selectedConditions,
-        preferred_language: preferredLang,
-        emergency_contact: emergencyContact.trim(),
-        health_id: worker.health_id,
-        profile_completed: true,
-      });
-
-      // 3. Trigger confetti celebration
+      // 2. Trigger confetti celebration
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
       });
 
-      const token = pendingUser.token || `token_sb_${worker.id}`;
+      const token = pendingUser.token || `token_user_${worker.id}`;
       setTimeout(() => {
         onComplete(worker, token);
       }, 400);
@@ -182,21 +164,13 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
         email: pendingUser.email,
       });
 
-      await updateSupabaseUserProfile({
-        role: 'provider',
-        name: doctorName.trim(),
-        facility: facilityName.trim(),
-        reg_no: regNo.trim(),
-        profile_completed: true,
-      });
-
       confetti({
         particleCount: 90,
         spread: 60,
         origin: { y: 0.6 },
       });
 
-      const token = pendingUser.token || `token_sb_${provider.id}`;
+      const token = pendingUser.token || `token_user_${provider.id}`;
       setTimeout(() => {
         onComplete(provider, token);
       }, 400);
@@ -227,20 +201,13 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
         email: pendingUser.email,
       });
 
-      await updateSupabaseUserProfile({
-        role: 'employer',
-        name: employerName.trim(),
-        company: companyName.trim(),
-        profile_completed: true,
-      });
-
       confetti({
         particleCount: 90,
         spread: 60,
         origin: { y: 0.6 },
       });
 
-      const token = pendingUser.token || `token_sb_${employer.id}`;
+      const token = pendingUser.token || `token_user_${employer.id}`;
       setTimeout(() => {
         onComplete(employer, token);
       }, 400);
@@ -686,7 +653,7 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
                     type="text"
                     value={doctorName}
                     onChange={(e) => setDoctorName(e.target.value)}
-                    placeholder="e.g. Dr. Sarah Jenkins"
+                    placeholder="e.g. Clinical Officer / Physician Name"
                     className="w-full minimal-input px-3.5 py-2.5"
                     required
                   />
@@ -767,7 +734,7 @@ export const UserInfoSetupView: React.FC<UserInfoSetupViewProps> = ({
                     type="text"
                     value={employerName}
                     onChange={(e) => setEmployerName(e.target.value)}
-                    placeholder="e.g. David Wong (Safety Director)"
+                    placeholder="e.g. Safety Director / Manager"
                     className="w-full minimal-input px-3.5 py-2.5"
                     required
                   />

@@ -87,7 +87,7 @@ export const SAMPLE_DOC_PRESETS: SampleDocPreset[] = [
     title: 'Clinic Prescription & Medication Slip',
     type: 'prescription',
     facility: 'Tuas Community Medical Center',
-    provider: 'Dr. Sarah Jenkins (MCR-2018-9482)',
+    provider: 'Attending Physician (MCR-2018-9482)',
     date: '2026-08-15',
     notes: 'Prescribed Amoxicillin 500mg (1 cap 3x daily x 5 days) + Paracetamol 500mg PRN for fever. Worker advised on 2 days light duty.',
     previewUrl: createSampleDocSvg(
@@ -134,7 +134,7 @@ export const SAMPLE_DOC_PRESETS: SampleDocPreset[] = [
     title: 'Diagnostic Lab Test & Chest X-Ray Report',
     type: 'lab_result',
     facility: 'Jurong Diagnostic & Pathology Laboratories',
-    provider: 'Dr. Kelvin Ho (Consultant Pathologist)',
+    provider: 'Consultant Pathologist',
     date: '2026-05-10',
     notes: 'Annual Foreign Worker Medical Exam: Chest X-Ray Normal (no active pulmonary lesions). Fasting blood sugar 5.2 mmol/L. Hemoglobin 14.8 g/dL.',
     previewUrl: createSampleDocSvg(
@@ -158,7 +158,7 @@ export const SAMPLE_DOC_PRESETS: SampleDocPreset[] = [
     title: 'Statutory Fit-for-Work Medical Certificate',
     type: 'visit',
     facility: 'Occupational Health & Screening Center',
-    provider: 'Dr. Raymond Tan (Occupational Physician)',
+    provider: 'Occupational Health Physician',
     date: '2026-07-02',
     notes: 'Comprehensive occupational health screening completed. Fit for work at height, heavy lifting, and standard industrial operations without restrictions.',
     previewUrl: createSampleDocSvg(

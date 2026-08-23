@@ -1,13 +1,25 @@
-import React from 'react';
-import { X, QrCode, Camera } from 'lucide-react';
-import { DEMO_PASSENGERS } from '../../constants/medicalOptions';
+import { useState, useEffect, FC } from 'react';
+import { X, Camera } from 'lucide-react';
+import { getWorkers, subscribeToStorage } from '../../services';
+import { WorkerUser } from '../../types';
 
 interface ScannerModalProps {
   onScan: (healthId: string) => void;
   onClose: () => void;
 }
 
-export const ScannerModal: React.FC<ScannerModalProps> = ({ onScan, onClose }) => {
+export const ScannerModal: FC<ScannerModalProps> = ({ onScan, onClose }) => {
+  const [workers, setWorkers] = useState<WorkerUser[]>([]);
+
+  useEffect(() => {
+    const load = () => {
+      setWorkers(getWorkers());
+    };
+    load();
+    const unsub = subscribeToStorage(load);
+    return () => unsub();
+  }, []);
+
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
@@ -45,27 +57,29 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ onScan, onClose }) =
             </div>
           </div>
 
-          <div className="space-y-2">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
-              Or Click Demo Patient to Simulate Scan:
-            </span>
-            <div className="grid grid-cols-1 gap-2">
-              {DEMO_PASSENGERS.map((patient) => (
-                <button
-                  key={patient.id}
-                  type="button"
-                  onClick={() => onScan(patient.id)}
-                  className="p-2.5 rounded-lg border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition flex items-center justify-between cursor-pointer"
-                >
-                  <div>
-                    <p className="text-xs font-bold text-slate-900">{patient.name}</p>
-                    <p className="text-[10px] text-slate-500 font-mono-code">{patient.id}</p>
-                  </div>
-                  <span className="text-[11px] font-semibold text-emerald-700">Simulate Scan →</span>
-                </button>
-              ))}
+          {workers.length > 0 && (
+            <div className="space-y-2">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
+                Or Select Patient From Active Registry to Simulate Scan:
+              </span>
+              <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+                {workers.slice(0, 5).map((patient) => (
+                  <button
+                    key={patient.id}
+                    type="button"
+                    onClick={() => onScan(patient.health_id)}
+                    className="p-2.5 rounded-lg border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition flex items-center justify-between cursor-pointer"
+                  >
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">{patient.name}</p>
+                      <p className="text-[10px] text-slate-500 font-mono-code">{patient.health_id}</p>
+                    </div>
+                    <span className="text-[11px] font-semibold text-emerald-700">Simulate Scan →</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

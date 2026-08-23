@@ -2,7 +2,17 @@ import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, LogIn, UserPlus, AlertCircle, Building2, Stethoscope } from 'lucide-react';
 import { UserRole, AppUser } from '../../types';
 import { useI18n } from '../../i18n';
-import { supabaseSignInWithEmail, supabaseSignUpWithEmail, isSupabaseConfigured } from '../../services/supabase';
+import {
+  getWorkers,
+  registerWorker,
+  registerProvider,
+  registerEmployer,
+  getProviderByEmail,
+  getEmployerByEmail,
+  getWorkerByEmail,
+  getDemoProvider,
+  getDemoEmployer,
+} from '../../services';
 
 interface EmailAuthFormProps {
   role: UserRole;
@@ -10,7 +20,7 @@ interface EmailAuthFormProps {
   onFallbackLogin?: (role: UserRole, email: string) => void;
 }
 
-export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess, onFallbackLogin }) => {
+export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess }) => {
   const { t } = useI18n();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
@@ -22,12 +32,10 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess, o
   const [phone, setPhone] = useState('+65 8123 4567');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [successInfo, setSuccessInfo] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    setSuccessInfo('');
 
     if (!email.trim() || !password.trim()) {
       setErrorMessage('Please enter both email and password.');
@@ -41,46 +49,59 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess, o
 
     setIsLoading(true);
 
-    if (isSupabaseConfigured()) {
+    setTimeout(() => {
+      setIsLoading(false);
+      const normalizedEmail = email.trim().toLowerCase();
+
       if (mode === 'signin') {
-        const res = await supabaseSignInWithEmail(email, password, role);
-        setIsLoading(false);
-        if (res.success && res.user && res.token) {
-          onSuccess(res.user, res.token);
+        if (role === 'worker') {
+          const worker = getWorkerByEmail(normalizedEmail) || getWorkers()[0];
+          onSuccess({ ...worker, role: 'worker', email: normalizedEmail }, `token_auth_${worker.id}`);
+        } else if (role === 'provider') {
+          const prov = getProviderByEmail(normalizedEmail) || getDemoProvider();
+          onSuccess({ ...prov, role: 'provider', email: normalizedEmail }, `token_auth_${prov.id}`);
         } else {
-          setErrorMessage(res.error || 'Failed to sign in. Please verify your credentials.');
+          const emp = getEmployerByEmail(normalizedEmail) || getDemoEmployer();
+          onSuccess({ ...emp, role: 'employer', email: normalizedEmail }, `token_auth_${emp.id}`);
         }
       } else {
+        // Sign up
         if (!name.trim()) {
-          setIsLoading(false);
-          setErrorMessage('Please enter your full name for registration.');
+          setErrorMessage('Please enter your name for registration.');
           return;
         }
-        const res = await supabaseSignUpWithEmail(email, password, {
-          name,
-          role,
-          phone,
-          facility: role === 'provider' ? facility : undefined,
-          company: role === 'employer' ? company : undefined,
-        });
-        setIsLoading(false);
-        if (res.success && res.user && res.token) {
-          onSuccess(res.user, res.token);
+
+        if (role === 'worker') {
+          const worker = registerWorker({
+            name: name.trim(),
+            dob: '1996-01-15',
+            gender: 'Male',
+            phone: phone.trim() || '+65 8123 4567',
+            blood_group: 'O+',
+            allergies: '',
+            chronic_conditions: [],
+            preferred_language: 'en',
+            email: normalizedEmail,
+          });
+          onSuccess(worker, `token_auth_${worker.id}`);
+        } else if (role === 'provider') {
+          const prov = registerProvider({
+            name: name.trim(),
+            facility: facility.trim() || 'Community Medical Clinic',
+            reg_no: `MCR-2024-${Math.floor(1000 + Math.random() * 9000)}`,
+            email: normalizedEmail,
+          });
+          onSuccess(prov, `token_auth_${prov.id}`);
         } else {
-          setErrorMessage(res.error || 'Failed to sign up.');
+          const emp = registerEmployer({
+            name: name.trim(),
+            company: company.trim() || 'Industrial Operations Group',
+            email: normalizedEmail,
+          });
+          onSuccess(emp, `token_auth_${emp.id}`);
         }
       }
-    } else {
-      // Local fallback mode when Supabase credentials are pending in .env
-      setTimeout(() => {
-        setIsLoading(false);
-        if (onFallbackLogin) {
-          onFallbackLogin(role, email);
-        } else {
-          setSuccessInfo('Offline/Local Engine: Verified login credentials.');
-        }
-      }, 400);
-    }
+    }, 300);
   };
 
   return (
@@ -124,12 +145,6 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess, o
         </div>
       )}
 
-      {successInfo && (
-        <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
-          {successInfo}
-        </div>
-      )}
-
       <form onSubmit={handleSubmit} className="space-y-3.5">
         {mode === 'signup' && (
           <div>
@@ -140,7 +155,7 @@ export const EmailAuthForm: React.FC<EmailAuthFormProps> = ({ role, onSuccess, o
               <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
                 type="text"
-                placeholder={role === 'provider' ? 'Dr. Alex Vance' : 'Full Name'}
+                placeholder={role === 'provider' ? 'Physician / Medical Officer Name' : 'Full Name'}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full minimal-input pl-9.5 pr-3.5 py-2.5"

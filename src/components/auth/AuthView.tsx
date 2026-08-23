@@ -7,8 +7,6 @@ import {
   getWorkerByHealthId,
   getDemoProvider,
   getDemoEmployer,
-  isSupabaseConfigured,
-  supabaseSignInWithGoogle,
 } from '../../services';
 import { Header, Footer, Badge } from '../common';
 import { RoleSelector } from './RoleSelector';
@@ -98,22 +96,9 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }, 350);
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setErrorMessage('');
-    setIsLoading(true);
-
-    try {
-      if (isSupabaseConfigured()) {
-        await supabaseSignInWithGoogle(selectedRole || 'worker');
-      } else {
-        setIsLoading(false);
-        setShowGoogleModal(true);
-      }
-    } catch (err: any) {
-      setIsLoading(false);
-      // If Supabase OAuth fails or not configured, allow direct setup
-      setShowGoogleModal(true);
-    }
+    setShowGoogleModal(true);
   };
 
   const handleConfirmGoogleMockSignIn = (e: React.FormEvent) => {

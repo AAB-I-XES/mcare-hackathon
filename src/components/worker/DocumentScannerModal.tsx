@@ -627,7 +627,7 @@ export const DocumentScannerModal: React.FC<DocumentScannerModalProps> = ({
                   type="text"
                   value={providerName}
                   onChange={(e) => setProviderName(e.target.value)}
-                  placeholder="e.g. Dr. Sarah Jenkins / Attending Dr"
+                  placeholder="e.g. Attending Physician / Duty Medical Officer"
                   className="w-full minimal-input px-3 py-2 text-xs"
                 />
               </div>

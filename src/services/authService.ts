@@ -67,6 +67,7 @@ export const registerProvider = (data: {
     providers.unshift(newProvider);
   }
   setItem(STORAGE_KEYS.PROVIDERS, providers);
+
   return newProvider;
 };
 
@@ -111,6 +112,7 @@ export const registerEmployer = (data: {
     employers.unshift(newEmployer);
   }
   setItem(STORAGE_KEYS.EMPLOYERS, employers);
+
   return newEmployer;
 };
 
