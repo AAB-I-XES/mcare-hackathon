@@ -353,89 +353,92 @@ export const DocumentScannerModal: React.FC<DocumentScannerModalProps> = ({
                 </div>
               </div>
 
-              {/* Viewfinder On-Screen Camera Controls */}
-              <div className="absolute top-3 right-3 flex items-center gap-1.5 z-20">
-                {hasTorchCapability && (
-                  <button
-                    type="button"
-                    onClick={toggleTorch}
-                    title={t('torchToggle')}
-                    className={`p-2 rounded-full backdrop-blur-md transition cursor-pointer ${
-                      torchActive
-                        ? 'bg-amber-400 text-slate-950 shadow-lg'
-                        : 'bg-slate-900/70 text-white hover:bg-slate-800'
-                    }`}
-                  >
-                    {torchActive ? <Zap className="w-4 h-4" /> : <ZapOff className="w-4 h-4" />}
-                  </button>
-                )}
-
+            {/* Viewfinder On-Screen Camera Controls */}
+            <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
+              {hasTorchCapability && (
                 <button
                   type="button"
-                  onClick={toggleFacingMode}
-                  title={t('switchCamera')}
-                  className="p-2 rounded-full bg-slate-900/70 backdrop-blur-md text-white hover:bg-slate-800 transition cursor-pointer"
+                  onClick={toggleTorch}
+                  title={t('torchToggle')}
+                  className={`w-11 h-11 rounded-full backdrop-blur-md transition cursor-pointer flex items-center justify-center ${
+                    torchActive
+                      ? 'bg-amber-400 text-slate-950 shadow-lg'
+                      : 'bg-slate-900/80 text-white hover:bg-slate-800'
+                  }`}
                 >
-                  <RefreshCw className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Error or Permission Alert if any */}
-            {cameraError && (
-              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800 flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <p className="font-semibold">{cameraError}</p>
-                  <p className="text-[11px] text-amber-700">
-                    Tip: You can take a photo with your phone camera or select an existing prescription file below.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Bottom Camera Action Bar */}
-            <div className="flex items-center justify-between gap-3 pt-1">
-              {/* File Upload Button */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="btn-minimal-secondary flex items-center gap-1.5 py-2.5 px-3 text-xs cursor-pointer"
-              >
-                <Upload className="w-4 h-4 text-slate-600" />
-                <span>{t('uploadFromGallery')}</span>
-              </button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-                accept="image/*,application/pdf"
-                multiple
-                className="hidden"
-              />
-
-              {/* Primary Snapshot Capture Button */}
-              <button
-                type="button"
-                onClick={handleCaptureFrame}
-                className="flex-1 max-w-[200px] py-3 px-4 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold rounded-xl shadow-lg shadow-sky-600/30 flex items-center justify-center gap-2 transition cursor-pointer"
-              >
-                <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-white/40" />
-                <span className="text-sm font-extrabold">{t('capturePhoto')}</span>
-              </button>
-
-              {/* Review Page Count Badge if already has pages */}
-              {capturedPages.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setMode('review')}
-                  className="btn-minimal-primary bg-emerald-700 hover:bg-emerald-800 text-xs py-2.5 px-3 cursor-pointer"
-                >
-                  <span>Review ({capturedPages.length})</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  {torchActive ? <Zap className="w-5 h-5" /> : <ZapOff className="w-5 h-5" />}
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={toggleFacingMode}
+                title={t('switchCamera')}
+                className="w-11 h-11 rounded-full bg-slate-900/80 backdrop-blur-md text-white hover:bg-slate-800 transition cursor-pointer flex items-center justify-center"
+              >
+                <RefreshCw className="w-5 h-5" />
+              </button>
             </div>
+          </div>
+
+          {/* Error or Permission Alert if any */}
+          {cameraError && (
+            <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-bold">{cameraError}</p>
+                <p className="text-[11px] text-amber-800">
+                  Tip: You can take a photo with your phone camera or select an existing prescription file below.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Bottom Camera Action Bar with 44px+ touch targets */}
+          <div className="flex items-center justify-between gap-2 sm:gap-3 pt-1">
+            {/* File Upload Button */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="btn-minimal-secondary flex items-center justify-center gap-1.5 py-3 px-3.5 text-xs font-bold cursor-pointer min-h-[44px] shrink-0"
+            >
+              <Upload className="w-4 h-4 text-slate-600" />
+              <span className="hidden xs:inline">{t('uploadFromGallery')}</span>
+              <span className="xs:hidden">Upload</span>
+            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept="image/*,application/pdf"
+              multiple
+              className="hidden"
+            />
+
+            {/* Primary Snapshot Capture Button */}
+            <button
+              type="button"
+              onClick={handleCaptureFrame}
+              className="flex-1 max-w-[220px] py-3 px-4 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-extrabold rounded-xl shadow-lg shadow-sky-600/30 flex items-center justify-center gap-2 transition cursor-pointer min-h-[48px]"
+            >
+              <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-white/40 animate-pulse" />
+              <span className="text-xs sm:text-sm font-extrabold">{t('capturePhoto')}</span>
+            </button>
+
+            {/* Review Page Count Badge if already has pages */}
+            {capturedPages.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setMode('review')}
+                className="btn-minimal-primary bg-emerald-700 hover:bg-emerald-800 text-xs font-bold py-3 px-3 cursor-pointer min-h-[44px] shrink-0"
+              >
+                <span>({capturedPages.length})</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <div className="w-10 sm:w-0" />
+            )}
+          </div>
 
             {/* Quick Demo Sample Documents (For easy testing without physical paper) */}
             <div className="pt-3 border-t border-slate-100 space-y-2">

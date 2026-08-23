@@ -132,7 +132,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between text-slate-900 selection:bg-sky-500 selection:text-white">
       <Header />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8 md:py-12 flex flex-col items-center justify-center">
+      <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-8 md:py-12 flex flex-col items-center justify-center">
         {!selectedRole ? (
           <RoleSelector
             onSelectRole={(role) => {
@@ -144,7 +144,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
           />
         ) : (
           <div className="w-full max-w-md mx-auto">
-            <div className="minimal-card p-6 sm:p-8 space-y-5 shadow-md">
+            <div className="minimal-card p-4 sm:p-7 space-y-4 sm:space-y-5 shadow-sm">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <button
                   type="button"
@@ -152,7 +152,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     setSelectedRole(null);
                     setErrorMessage('');
                   }}
-                  className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1"
+                  className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1 min-h-[38px] p-1"
                 >
                   ← Back to Portals
                 </button>
