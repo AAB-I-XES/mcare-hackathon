@@ -138,9 +138,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
             onSelectRole={(role) => {
               setSelectedRole(role);
             }}
-            onDemoWorker={handleDemoWorkerLogin}
-            onDemoDoctor={handleDemoProviderLogin}
-            onDemoEmployer={handleDemoEmployerLogin}
           />
         ) : (
           <div className="w-full max-w-md mx-auto">

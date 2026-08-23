@@ -7,29 +7,17 @@ import {
   QrCode,
   Lock,
   ShieldCheck,
-  Zap,
   CheckCircle2,
-  FileText,
-  Activity,
-  ChevronRight,
-  PhoneCall,
-  Sparkles,
 } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { UserRole } from '../../types';
 
 interface RoleSelectorProps {
   onSelectRole: (role: UserRole) => void;
-  onDemoWorker?: (healthId: string) => void;
-  onDemoDoctor?: () => void;
-  onDemoEmployer?: () => void;
 }
 
 export const RoleSelector: React.FC<RoleSelectorProps> = ({
   onSelectRole,
-  onDemoWorker,
-  onDemoDoctor,
-  onDemoEmployer,
 }) => {
   const { t } = useI18n();
   const [activeMobileRole, setActiveMobileRole] = useState<UserRole>('worker');
@@ -176,63 +164,6 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({
           </button>
         </div>
 
-        {/* Quick Demo One-Tap Access Strip */}
-        <div className="space-y-2 pt-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-              Quick Test Personas (1-Tap Entry)
-            </span>
-            <span className="text-[10px] text-slate-400 font-mono-code font-bold">No PIN Required</span>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => onDemoWorker?.('MIG-2024-8841')}
-              className="p-2.5 rounded-xl border border-sky-200 bg-sky-50/60 hover:bg-sky-100/80 active:scale-95 text-left transition cursor-pointer flex flex-col justify-between min-h-[64px]"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-sky-800 uppercase">Worker</span>
-                <User className="w-3.5 h-3.5 text-sky-600" />
-              </div>
-              <div>
-                <p className="font-bold text-slate-900 text-xs truncate">Ramesh K.</p>
-                <p className="text-[10px] text-slate-500 truncate">O+ · 2 Doses</p>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onDemoDoctor?.()}
-              className="p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100/80 active:scale-95 text-left transition cursor-pointer flex flex-col justify-between min-h-[64px]"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-emerald-800 uppercase">Doctor</span>
-                <Stethoscope className="w-3.5 h-3.5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="font-bold text-slate-900 text-xs truncate">Dr. Roy</p>
-                <p className="text-[10px] text-slate-500 truncate">City Clinic</p>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onDemoEmployer?.()}
-              className="p-2.5 rounded-xl border border-amber-200 bg-amber-50/60 hover:bg-amber-100/80 active:scale-95 text-left transition cursor-pointer flex flex-col justify-between min-h-[64px]"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-amber-800 uppercase">Gate</span>
-                <Building2 className="w-3.5 h-3.5 text-amber-600" />
-              </div>
-              <div>
-                <p className="font-bold text-slate-900 text-xs truncate">Safety Supv.</p>
-                <p className="text-[10px] text-slate-500 truncate">Site Terminal</p>
-              </div>
-            </button>
-          </div>
-        </div>
-
         {/* Security Highlights Horizontal Cards */}
         <div className="grid grid-cols-2 gap-2 pt-1">
           <div className="p-3 rounded-xl border border-slate-200 bg-white shadow-xs space-y-1">
@@ -299,36 +230,6 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({
               <p className="text-[11px] text-slate-500 leading-snug">
                 Employers never see private consultation notes
               </p>
-            </div>
-          </div>
-
-          {/* Quick Demo Access Bar on Desktop */}
-          <div className="pt-2">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-              One-Click Demo Switcher:
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => onDemoWorker?.('MIG-2024-8841')}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-50 text-sky-800 border border-sky-200 hover:bg-sky-100 transition cursor-pointer"
-              >
-                Demo Worker (Ramesh)
-              </button>
-              <button
-                type="button"
-                onClick={() => onDemoDoctor?.()}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition cursor-pointer"
-              >
-                Demo Doctor (Dr. Roy)
-              </button>
-              <button
-                type="button"
-                onClick={() => onDemoEmployer?.()}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition cursor-pointer"
-              >
-                Demo Gate Terminal
-              </button>
             </div>
           </div>
         </div>
