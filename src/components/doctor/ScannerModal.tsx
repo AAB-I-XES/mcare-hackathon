@@ -41,7 +41,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ onScan, onClose }) =
             <div className="w-full h-0.5 bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
 
             <div className="absolute bottom-3 text-[10px] font-mono-code text-emerald-400 bg-slate-900/80 px-2 py-0.5 rounded">
-              ALIGN QR CODE HERE
+              scanning thr qr please wait...
             </div>
           </div>
 

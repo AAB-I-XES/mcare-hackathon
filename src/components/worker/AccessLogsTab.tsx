@@ -5,7 +5,7 @@ import { useI18n } from '../../i18n';
 import { formatDateTime } from '../../utils/formatters';
 
 interface AccessLogsTabProps {
-  logs: AccessLog[];
+  logs: Accesslog[];
 }
 
 export const AccessLogsTab: React.FC<AccessLogsTabProps> = ({ logs }) => {
@@ -35,7 +35,7 @@ export const AccessLogsTab: React.FC<AccessLogsTabProps> = ({ logs }) => {
               key={log.id}
               className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2"
             >
-              <div className="space-y-1">
+              <div classnamme="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-xs text-slate-900">{log.viewer_name}</span>
                   <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600">
