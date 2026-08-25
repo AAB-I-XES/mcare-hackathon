@@ -41,42 +41,7 @@ It solves health record fragmentation and communication barriers across jurisdic
 * **State & Sync**: Custom reactive hooks (`useAuth`, `useWorkerConsent`, `useCountdownTimer`) with cross-tab storage sync
 * **Backend / Database**: Supabase (`@supabase/supabase-js`) & local storage fallback
 
----
-
-## 🚀 Getting Started
-
-### 1. Prerequisites
-* Node.js 18+
-* npm or bun
-
-### 2. Installation
-```bash
-# Install dependencies
-npm install
-```
-
-### 3. Environment Configuration
-Create a `.env` file (refer to `.env.example`):
-```env
-# Optional Supabase Integration
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-```
-
-### 4. Development Server
-```bash
-npm run dev
-```
-The application will start on `http://localhost:3000`.
-
-### 5. Production Build
-```bash
-npm run build
-npm start
-```
-
----
-
+--
 ## 🛡️ Privacy & Compliance Model
 
 1. **Zero-Knowledge Fitness Checks**: Employers receive binary clearance indicators and safety recommendations without clinical disclosures.
